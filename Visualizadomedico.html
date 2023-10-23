@@ -1,29 +1,52 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Análisis Médico</title>
+<style>
+
+body {
+  font-family: Arial, sans-serif;  
+}
+footer {
+  font-weight: bold; 
+}
+
+h1 {
+  text-align: center;
+}
+h2 {
+  text-align: center;
+  color: blue;
+}
+
+pre {
+  background-color: #f5f5f5;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;  
+}
+
+</style>
 </head>
 
 <body>
+<h2>Visualizador medico para freecodecamp</h2>
+<br>
+<h1>Código Python</h1>
 
-  <h1>Análisis de Datos Médicos</h1>
-  <link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css" />
-<script defer src="https://pyscript.net/latest/pyscript.js"></script>
 
-  <button onclick="generatePlots()">Generar Gráficos</button>
+<pre>
+import pandas as pd
 
-  <div id="plots"></div>
-
-  <py-script>
-    import pandas as pd
 import seaborn as sns
+
 import matplotlib.pyplot as plt
+
 import numpy as np
 
 # Import data
 df = pd.read_csv('medical_examination.csv')
 
-# Add 'overweight' column
+# Add 'overweight' column 
 df['overweight'] = (df['weight']/((df['height']/100)**2) > 25).astype(int)
 
 # Normalize data by making 0 always good and 1 always bad. If the value of 'cholestorol' or 'gluc' is 1, make the value 0. If the value is more than 1, make the value 1.
@@ -31,52 +54,53 @@ df[['gluc','cholesterol']] = (df[['gluc','cholesterol']] > 1).astype(int)
 
 # Draw Categorical Plot
 def draw_cat_plot():
-    # Create DataFrame for cat plot using `pd.melt` using just the values from 'cholesterol', 'gluc', 'smoke', 'alco', 'active', and 'overweight'.
-    df_cat = pd.melt(df, id_vars=['cardio'], value_vars=['active', 'alco', 'cholesterol', 'gluc', 'overweight', 'smoke'])
 
+  # Create DataFrame for cat plot using `pd.melt` using just the values from 'cholesterol', 'gluc', 'smoke', 'alco', 'active', and 'overweight'.
 
-    # Group and reformat the data to split it by 'cardio'. Show the counts of each feature. You will have to rename one of the collumns for the catplot to work correctly.
-    #df_cat = None
+  df_cat = pd.melt(df, id_vars=['cardio'], value_vars=['active', 'alco', 'cholesterol', 'gluc', 'overweight', 'smoke']) 
 
-    # Draw the catplot with 'sns.catplot()'
-    fig = sns.catplot(data = df_cat, kind='count',  x='variable', hue='value', col='cardio').set(ylabel = 'total').fig
+  # Group and reformat the data to split it by 'cardio'. Show the counts of each feature. You will have to rename one of the collumns for the catplot to work correctly.
 
+  #df_cat = None
 
-    # Do not modify the next two lines
-    fig.savefig('catplot.png')
-    return fig
+  # Draw the catplot with 'sns.catplot()'
+  
+  fig = sns.catplot(data=df_cat, kind='count', x='variable', hue='value', col='cardio').set(ylabel='total').fig
 
+  # Do not modify the next two lines
+  fig.savefig('catplot.png')
+  return fig
 
 # Draw Heat Map
 def draw_heat_map():
-    # Clean the data
-    df_heat = df[ 
-        ( df['ap_lo'] <= df['ap_hi'] ) & 
-        ( df['height'] >= df['height'].quantile(0.025) ) & 
-        ( df['height'] <= df['height'].quantile(0.975) ) & 
-        ( df['weight'] >= df['weight'].quantile(0.025) ) & 
-        ( df['weight'] <= df['weight'].quantile(0.975) ) 
-    ]
 
-    # Calculate the correlation matrix
-    corr = df_heat.corr()
+  # Clean the data
+  df_heat = df[
+    (df['ap_lo'] <= df['ap_hi']) &
+    (df['height'] >= df['height'].quantile(0.025)) &
+    (df['height'] <= df['height'].quantile(0.975)) &   
+    (df['weight'] >= df['weight'].quantile(0.025)) &
+    (df['weight'] <= df['weight'].quantile(0.975))
+  ]
 
-    # Generate a mask for the upper triangle
-    mask = np.triu(corr)
+  # Calculate the correlation matrix
+  corr = df_heat.corr()
 
+  # Generate a mask for the upper triangle 
+  mask = np.triu(corr)
 
-    # Set up the matplotlib figure
-    fig, ax =  plt.subplots()
-    
-    # Draw the heatmap with 'sns.heatmap()'
-    ax = sns.heatmap(corr, mask=mask, annot=True, fmt='0.1f', square=True)
+  # Set up the matplotlib figure
+  fig, ax = plt.subplots()
 
+  # Draw the heatmap with 'sns.heatmap()'
+  ax = sns.heatmap(corr, mask=mask, annot=True, fmt='0.1f', square=True)
 
-    # Do not modify the next two lines
-    fig.savefig('heatmap.png')
-    return fig
-
-  </py-script>
-
+  # Do not modify the next two lines
+  fig.savefig('heatmap.png')
+  return fig
+</pre>
+<footer>
+  <p>© 2023 Mi Sitio Web Hecho Mauricio Maroto Rojas</p>
+</footer>
 </body>
 </html>
